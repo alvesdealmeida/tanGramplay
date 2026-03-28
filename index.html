@@ -426,6 +426,65 @@ header {
 }
 .liberado {
   pointer-events: auto;
+
+/* ─── MOBILE RESPONSIVO ─── */
+@media (max-width: 640px) {
+
+  /* Empilha canvas em cima, peças embaixo */
+  .game-body {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* Canvas ocupa toda a largura */
+  .canvas-area {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  /* Painel de peças vira uma barra horizontal na base */
+  .pieces-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 2px solid var(--border);
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    gap: 8px;
+    max-height: 160px;
+    overflow-y: auto;
+  }
+
+  /* Botões de girar ficam lado a lado */
+  .rotate-btn {
+    width: auto;
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 8px;
+    font-size: 15px;
+  }
+
+  /* Header menor no mobile */
+  .game-header {
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .game-title { font-size: 15px; }
+
+  /* Cards de seleção maiores para toque */
+  .age-card, .puzzle-card {
+    touch-action: manipulation;
+  }
+
+  /* Agrupamento de faixas etárias em coluna */
+  .age-groups {
+    grid-template-columns: 1fr;
+  }
+}
 }
 /* ─── UTIL ─── */
 .hidden { display: none !important; }
@@ -981,6 +1040,28 @@ gCanvas.addEventListener('dblclick', e => {
     }
   }
 });
+  
+// ─── MOBILE: double tap para girar ───
+let lastTap = 0;
+gCanvas.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTap < 300) {
+    // Dois toques em menos de 300ms = girar
+    const [mx, my] = getCanvasPos(e, gCanvas);
+    for (let i = gamePieces.length - 1; i >= 0; i--) {
+      const p = gamePieces[i];
+      if (p.placed) continue;
+      const pts = getPiecePoints(p.def, p.cx, p.cy, p.angle, p.flipped);
+      if (pointInPoly(pts, mx, my)) {
+        selectedPiece = p;
+        rotateCurrent();
+        return;
+      }
+    }
+  }
+  lastTap = now;
+});
+// ─────────────────────────────────
 
 // ─────────────────────────────────────────────────────────────
 //  HINT
@@ -1070,8 +1151,22 @@ function updatePuzzleGrid() {
 
 function startPuzzle(puzzle, idx) {
   currentPuzzleIdx = idx;
-  document.getElementById('screen-levels').style.display='none';
-  document.getElementById('screen-game').style.display='block';
+  document.getElementById('screen-levels').style.display = 'none';
+  document.getElementById('screen-game').style.display = 'block';
+
+  
+// ─── MOBILE: ajusta tamanho do canvas à tela ───
+  const isMobile = window.innerWidth <= 640;
+  const canvasSize = isMobile
+    ? Math.min(window.innerWidth - 24, 360)
+    : 480;
+  gCanvas.width  = canvasSize;
+  gCanvas.height = canvasSize;
+  pCanvas.width  = isMobile ? 160 : 176;
+  pCanvas.height = isMobile ? 120 : 400;
+  // ──────────────────────────────────────────────
+
+
   initGame(puzzle);
 }
 
@@ -1086,6 +1181,18 @@ function goBack() {
 // ─────────────────────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────────────────────
+// ─── MOBILE: reajusta ao virar tela ───
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => {
+    if (currentPuzzle) {
+      const isMobile = window.innerWidth <= 640;
+      const sz = isMobile ? Math.min(window.innerWidth - 24, 360) : 480;
+      gCanvas.width = sz; gCanvas.height = sz;
+      render();
+    }
+  }, 300);
+});
+// ─────────────────────────────────────
 selectAge(0);
 </script>
 </body>
