@@ -425,11 +425,7 @@ header {
 
 /* ─── UTIL ─── */
 .hidden { display: none !important; }
-.disabled {
-  pointer-events: none;
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+
 </style>
 </head>
 <body>
@@ -450,17 +446,17 @@ header {
   <div class="screen-sub">Selecione o nível e escolha uma figura para montar!</div>
 
   <div class="age-groups">
-    <div class="age-card" style="--accent:#FDCB6E" onclick="selectAge(0)" id="age-0">
+    <div class="age-card disabled" style="--accent:#FDCB6E" onclick="selectAge(0)" id="age-0">
       <div class="age-emoji">🐣</div>
       <div class="age-title">2º e 3º ano</div>
       <div class="age-desc">7–9 anos · Figuras simples com silhueta visível</div>
     </div>
-    <div class="age-card" style="--accent:#6C5CE7" onclick="selectAge(1)" id="age-1">
+    <div class="age-card disabled" style="--accent:#6C5CE7" onclick="selectAge(1)" id="age-1">
       <div class="age-emoji">🚀</div>
       <div class="age-title">4º e 5º ano</div>
       <div class="age-desc">9–11 anos · Figuras médias sem guia</div>
     </div>
-    <div class="age-card" style="--accent:#00CEC9" onclick="selectAge(2)" id="age-2">
+    <div class="age-card disabled" style="--accent:#00CEC9" onclick="selectAge(2)" id="age-2">
       <div class="age-emoji">🧠</div>
       <div class="age-title">6º ano em diante</div>
       <div class="age-desc">11+ anos · Silhueta apenas, desafio total</div>
@@ -468,7 +464,7 @@ header {
   </div>
 
   <div id="puzzle-section" class="hidden">
-    <div class="screen-title" style="font-size:20px;margin-bottom:16px">Escolha uma figura</div>
+    <div class="screen-title disabled" style="font-size:20px;margin-bottom:16px">Escolha uma figura</div>
     <div class="puzzle-grid" id="puzzleGrid"></div>
   </div>
 </div>
@@ -478,7 +474,7 @@ header {
   <div class="game-header">
     <button class="btn-back" onclick="goBack()">← Voltar</button>
     <div class="game-title" id="gameTitle">Montando...</div>
-    <button class="hint-btn" id="hintBtn" onclick="toggleHint()">💡 Dica</button>
+    <button class="hint-btn" id="hintBtn" onclick="toggleHint()" disabled>💡 Dica</button>
     <div class="game-timer" id="timerDisplay">0:00</div>
   </div>
 
@@ -494,8 +490,8 @@ header {
       <div class="panel-title">Peças</div>
       <canvas id="pieceCanvas" width="176" height="400"></canvas>
       <p class="pieces-hint">Arraste as peças para o tabuleiro · Clique para girar</p>
-      <button class="rotate-btn" onclick="rotateCurrent()">↻ Girar peça</button>
-      <button class="rotate-btn" style="background:#FFF0F5;color:#C0396A;border:2px solid var(--pink);margin-top:4px" onclick="flipCurrent()">⇆ Espelhar</button>
+      <button class="rotate-btn" onclick="rotateCurrent()" disabled >↻ Girar peça</button>
+      <button class="rotate-btn" style="background:#FFF0F5;color:#C0396A;border:2px solid var(--pink);margin-top:4px" onclick="flipCurrent()" disabled>⇆ Espelhar</button>
       <div class="progress-wrap">
         <div class="progress-label">Peças no lugar: <span id="progressCount">0</span>/7</div>
         <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
