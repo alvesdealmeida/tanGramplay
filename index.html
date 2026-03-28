@@ -424,7 +424,9 @@ header {
   pointer-events: none;
   z-index: 200;
 }
-
+.liberado {
+  pointer-events: auto;
+}
 /* ─── UTIL ─── */
 .hidden { display: none !important; }
 
@@ -447,11 +449,11 @@ header {
   <div class="screen-title">Escolha sua turma</div>
   <div class="screen-sub">Selecione o nível e escolha uma figura para montar!</div>
 
-  <div class="age-groups">
-    <div class="age-card" style="--accent:#FDCB6E" onclick="selectAge(0)" id="age-0">
-      <div class="age-emoji">🐣</div>
-      <div class="age-title">2º e 3º ano</div>
-      <div class="age-desc">7–9 anos · Figuras simples com silhueta visível</div>
+  <div class="age-groups liberado">
+    <div class="age-card liberado" style="--accent:#FDCB6E" onclick="selectAge(0)" id="age-0">
+      <div class="age-emoji liberado">🐣</div>
+      <div class="age-title liberado">2º e 3º ano</div>
+      <div class="age-desc" liberado>7–9 anos · Figuras simples com silhueta visível</div>
     </div>
     <div class="age-card" style="--accent:#6C5CE7" onclick="selectAge(1)" id="age-1">
       <div class="age-emoji">🚀</div>
@@ -466,8 +468,8 @@ header {
   </div>
 
   <div id="puzzle-section" class="hidden">
-    <div class="screen-title" style="font-size:20px;margin-bottom:16px">Escolha uma figura</div>
-    <div class="puzzle-grid" id="puzzleGrid"></div>
+    <div class="screen-title liberado" style="font-size:20px;margin-bottom:16px">Escolha uma figura</div>
+    <div class="puzzle-grid liberado" id="puzzleGrid"></div>
   </div>
 </div>
 
@@ -476,7 +478,7 @@ header {
   <div class="game-header">
     <button class="btn-back" onclick="goBack()">← Voltar</button>
     <div class="game-title" id="gameTitle">Montando...</div>
-    <button class="hint-btn" id="hintBtn" onclick="toggleHint()" disabled>💡 Dica</button>
+    <button class="hint-btn" id="hintBtn" onclick="toggleHint()">💡 Dica</button>
     <div class="game-timer" id="timerDisplay">0:00</div>
   </div>
 
