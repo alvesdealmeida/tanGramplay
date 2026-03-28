@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TangramPlay — Jogo Educativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFF9F0;
+  --card: #FFFFFF;
+  --purple: #6C5CE7;
+  --purple-light: #A29BFE;
+  --teal: #00CEC9;
+  --coral: #FF7675;
+  --amber: #FDCB6E;
+  --green: #55EFC4;
+  --pink: #FD79A8;
+  --text: #2D3436;
+  --muted: #636E72;
+  --border: #E0D5C8;
+  --shadow: 0 4px 24px rgba(108,92,231,0.10);
+  --radius: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ─── */
+header {
+  background: var(--purple);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 16px rgba(108,92,231,0.3);
+}
+.logo {
+  font-family: 'Baloo 2', cursive;
+  font-size: 26px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--amber); }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.stars-display {
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.star-icon { font-size: 18px; }
+
+/* ─── LEVEL SELECTOR ─── */
+#screen-levels {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+.screen-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--purple);
+}
+.screen-sub {
+  text-align: center;
+  color: var(--muted);
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.age-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.age-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  border: 2.5px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.age-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: var(--accent);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.age-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: var(--accent);
+}
+.age-card.selected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, white);
+}
+.age-emoji { font-size: 40px; margin-bottom: 10px; }
+.age-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.age-desc { font-size: 13px; color: var(--muted); }
+
+/* ─── PUZZLE GRID ─── */
+.puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+}
+.puzzle-card {
+  background: var(--card);
+  border-radius: 16px;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+  position: relative;
+}
+.puzzle-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+  border-color: var(--purple-light);
+}
+.puzzle-card.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.puzzle-card.completed::after {
+  content: '✓';
+  position: absolute;
+  top: 8px; right: 8px;
+  background: var(--green);
+  color: #00664d;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800;
+}
+.puzzle-preview {
+  padding: 12px;
+  background: #F8F4FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.puzzle-info {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+}
+.puzzle-name {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+.puzzle-stars {
+  font-size: 12px;
+  color: var(--amber);
+}
+
+/* ─── GAME SCREEN ─── */
+#screen-game { display: none; }
+
+.game-header {
+  background: white;
+  border-bottom: 2px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.btn-back {
+  background: #F0ECFF;
+  color: var(--purple);
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-back:hover { background: var(--purple-light); color: white; }
+
+.game-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px;
+  font-weight: 700;
+  flex: 1;
+}
+.game-timer {
+  background: #FFF3D4;
+  border: 2px solid var(--amber);
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #9A7200;
+}
+.hint-btn {
+  background: #FFF0F5;
+  border: 2px solid var(--pink);
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #C0396A;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.hint-btn:hover { background: var(--pink); color: white; }
+
+.game-body {
+  display: flex;
+  gap: 0;
+  height: calc(100vh - 120px);
+}
+
+/* ─── CANVAS AREA ─── */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 20px;
+}
+
+.canvas-wrap {
+  position: relative;
+  background: white;
+  border-radius: 20px;
+  border: 2.5px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+#gameCanvas {
+  display: block;
+  cursor: grab;
+}
+#gameCanvas:active { cursor: grabbing; }
+
+.target-label {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* ─── PIECES PANEL ─── */
+.pieces-panel {
+  width: 200px;
+  background: white;
+  border-left: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  gap: 12px;
+  overflow-y: auto;
+}
+.panel-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--purple);
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+}
+#pieceCanvas {
+  display: block;
+  margin: 0 auto;
+  cursor: grab;
+}
+.pieces-hint {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+.rotate-btn {
+  background: #F0ECFF;
+  color: var(--purple);
+  border: none;
+  border-radius: 10px;
+  padding: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+}
+.rotate-btn:hover { background: var(--purple); color: white; }
+
+.progress-wrap {
+  margin-top: auto;
+}
+.progress-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.progress-bar {
+  height: 10px;
+  background: #F0ECFF;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--purple);
+  border-radius: 10px;
+  transition: width 0.4s;
+}
+
+/* ─── WIN OVERLAY ─── */
+#win-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+#win-overlay.show { display: flex; }
+
+.win-card {
+  background: white;
+  border-radius: 28px;
+  padding: 40px 32px;
+  text-align: center;
+  max-width: 380px;
+  width: 90%;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.win-emoji { font-size: 64px; margin-bottom: 16px; }
+.win-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+.win-msg { color: var(--muted); font-size: 16px; margin-bottom: 24px; }
+.win-stars { font-size: 36px; margin-bottom: 24px; letter-spacing: 8px; }
+.win-btns { display: flex; gap: 12px; justify-content: center; }
+.btn-primary {
+  background: var(--purple);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 24px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-primary:hover { background: #5A4BD1; transform: scale(1.03); }
+.btn-secondary {
+  background: #F0ECFF;
+  color: var(--purple);
+  border: none;
+  border-radius: 14px;
+  padding: 12px 24px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-secondary:hover { background: var(--purple-light); color: white; }
+
+/* ─── CONFETTI ─── */
+.confetti-piece {
+  position: fixed;
+  width: 10px; height: 10px;
+  top: -10px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* ─── UTIL ─── */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Tangram<span>Play</span></div>
+  <div class="header-right">
+    <div class="stars-display">
+      <span class="star-icon">⭐</span>
+      <span id="totalStars">0</span> estrelas
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════ LEVEL SELECT ═══════════════════════════════ -->
+<div id="screen-levels">
+  <div class="screen-title">Escolha sua turma</div>
+  <div class="screen-sub">Selecione o nível e escolha uma figura para montar!</div>
+
+  <div class="age-groups">
+    <div class="age-card" style="--accent:#FDCB6E" onclick="selectAge(0)" id="age-0">
+      <div class="age-emoji">🐣</div>
+      <div class="age-title">2º e 3º ano</div>
+      <div class="age-desc">7–9 anos · Figuras simples com silhueta visível</div>
+    </div>
+    <div class="age-card" style="--accent:#6C5CE7" onclick="selectAge(1)" id="age-1">
+      <div class="age-emoji">🚀</div>
+      <div class="age-title">4º e 5º ano</div>
+      <div class="age-desc">9–11 anos · Figuras médias sem guia</div>
+    </div>
+    <div class="age-card" style="--accent:#00CEC9" onclick="selectAge(2)" id="age-2">
+      <div class="age-emoji">🧠</div>
+      <div class="age-title">6º ano em diante</div>
+      <div class="age-desc">11+ anos · Silhueta apenas, desafio total</div>
+    </div>
+  </div>
+
+  <div id="puzzle-section" class="hidden">
+    <div class="screen-title" style="font-size:20px;margin-bottom:16px">Escolha uma figura</div>
+    <div class="puzzle-grid" id="puzzleGrid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ GAME SCREEN ═══════════════════════════════ -->
+<div id="screen-game">
+  <div class="game-header">
+    <button class="btn-back" onclick="goBack()">← Voltar</button>
+    <div class="game-title" id="gameTitle">Montando...</div>
+    <button class="hint-btn" id="hintBtn" onclick="toggleHint()">💡 Dica</button>
+    <div class="game-timer" id="timerDisplay">0:00</div>
+  </div>
+
+  <div class="game-body">
+    <div class="canvas-area">
+      <div class="target-label" id="targetLabel">Monte a figura na área abaixo</div>
+      <div class="canvas-wrap">
+        <canvas id="gameCanvas" width="480" height="480"></canvas>
+      </div>
+    </div>
+
+    <div class="pieces-panel">
+      <div class="panel-title">Peças</div>
+      <canvas id="pieceCanvas" width="176" height="400"></canvas>
+      <p class="pieces-hint">Arraste as peças para o tabuleiro · Clique para girar</p>
+      <button class="rotate-btn" onclick="rotateCurrent()">↻ Girar peça</button>
+      <button class="rotate-btn" style="background:#FFF0F5;color:#C0396A;border:2px solid var(--pink);margin-top:4px" onclick="flipCurrent()">⇆ Espelhar</button>
+      <div class="progress-wrap">
+        <div class="progress-label">Peças no lugar: <span id="progressCount">0</span>/7</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ WIN OVERLAY ═══════════════════════════════ -->
+<div id="win-overlay">
+  <div class="win-card">
+    <div class="win-emoji" id="winEmoji">🎉</div>
+    <div class="win-title">Incrível!</div>
+    <div class="win-msg" id="winMsg">Você montou a figura!</div>
+    <div class="win-stars" id="winStars">⭐⭐⭐</div>
+    <div class="win-btns">
+      <button class="btn-secondary" onclick="goBack()">Escolher outra</button>
+      <button class="btn-primary" onclick="nextPuzzle()">Próxima →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+//  DATA — Puzzles por nível
+//  Cada peça: { id, type, color, x, y, angle, flipped }
+//  Posições TARGET no canvas 480×480, unidade = 60px
+// ─────────────────────────────────────────────────────────────
+
+const COLORS = {
+  lt1: { fill:'#A29BFE', stroke:'#6C5CE7' },
+  lt2: { fill:'#81ECEC', stroke:'#00CEC9' },
+  mt:  { fill:'#FFEAA7', stroke:'#FDCB6E' },
+  st1: { fill:'#FD79A8', stroke:'#E84393' },
+  st2: { fill:'#55EFC4', stroke:'#00B894' },
+  sq:  { fill:'#FAB1A0', stroke:'#E17055' },
+  pg:  { fill:'#DFE6E9', stroke:'#636E72' },
+};
+
+// Shapes definitions - all relative, unit = 1, scaled to fit
+// Triangle: isoceles right triangle, legs = 1
+// We store piece definitions and their TARGET positions for each puzzle
+
+const PIECES_DEF = [
+  { id:'lt1', label:'Grande 1', shape:'tri', scale:2, color: COLORS.lt1 },
+  { id:'lt2', label:'Grande 2', shape:'tri', scale:2, color: COLORS.lt2 },
+  { id:'mt',  label:'Médio',    shape:'tri', scale:1.414, color: COLORS.mt  },
+  { id:'st1', label:'Peq. 1',  shape:'tri', scale:1, color: COLORS.st1 },
+  { id:'st2', label:'Peq. 2',  shape:'tri', scale:1, color: COLORS.st2 },
+  { id:'sq',  label:'Quadrado', shape:'sq',  scale:1, color: COLORS.sq  },
+  { id:'pg',  label:'Paralel.', shape:'pg',  scale:1, color: COLORS.pg  },
+];
+
+// Puzzles: target pieces positions (cx,cy = center in canvas coords, angle in degrees)
+const PUZZLES = [
+  // ── LEVEL 0 (2-3º ano) ──
+  {
+    id:'casa', name:'Casa', level:0, emoji:'🏠',
+    solution: [
+      { id:'lt1', cx:240, cy:130, a:0,   fl:false },
+      { id:'lt2', cx:240, cy:130, a:90,  fl:false },
+      { id:'mt',  cx:240, cy:130, a:180, fl:false },
+      { id:'st1', cx:150, cy:310, a:270, fl:false },
+      { id:'st2', cx:330, cy:310, a:90,  fl:false },
+      { id:'sq',  cx:195, cy:370, a:0,   fl:false },
+      { id:'pg',  cx:285, cy:370, a:0,   fl:false },
+    ]
+  },
+  {
+    id:'peixe', name:'Peixe', level:0, emoji:'🐟',
+    solution: [
+      { id:'lt1', cx:230, cy:220, a:0,   fl:false },
+      { id:'lt2', cx:310, cy:220, a:180, fl:false },
+      { id:'mt',  cx:160, cy:270, a:225, fl:false },
+      { id:'st1', cx:360, cy:160, a:45,  fl:false },
+      { id:'st2', cx:360, cy:280, a:315, fl:false },
+      { id:'sq',  cx:260, cy:310, a:45,  fl:false },
+      { id:'pg',  cx:200, cy:180, a:135, fl:false },
+    ]
+  },
+  {
+    id:'vela', name:'Vela de barco', level:0, emoji:'⛵',
+    solution: [
+      { id:'lt1', cx:200, cy:180, a:270, fl:false },
+      { id:'lt2', cx:320, cy:200, a:90,  fl:false },
+      { id:'mt',  cx:200, cy:320, a:0,   fl:false },
+      { id:'st1', cx:280, cy:330, a:180, fl:false },
+      { id:'st2', cx:320, cy:360, a:0,   fl:false },
+      { id:'sq',  cx:220, cy:360, a:0,   fl:false },
+      { id:'pg',  cx:270, cy:280, a:45,  fl:false },
+    ]
+  },
+
+  // ── LEVEL 1 (4-5º ano) ──
+  {
+    id:'gato', name:'Gato', level:1, emoji:'🐱',
+    solution: [
+      { id:'lt1', cx:240, cy:220, a:0,   fl:false },
+      { id:'lt2', cx:240, cy:220, a:180, fl:false },
+      { id:'mt',  cx:160, cy:160, a:315, fl:false },
+      { id:'st1', cx:190, cy:110, a:225, fl:false },
+      { id:'st2', cx:290, cy:110, a:135, fl:false },
+      { id:'sq',  cx:240, cy:150, a:45,  fl:false },
+      { id:'pg',  cx:330, cy:290, a:90,  fl:false },
+    ]
+  },
+  {
+    id:'coelho', name:'Coelho', level:1, emoji:'🐰',
+    solution: [
+      { id:'lt1', cx:200, cy:310, a:180, fl:false },
+      { id:'lt2', cx:280, cy:310, a:0,   fl:false },
+      { id:'mt',  cx:240, cy:240, a:270, fl:false },
+      { id:'st1', cx:185, cy:155, a:315, fl:false },
+      { id:'st2', cx:295, cy:155, a:45,  fl:false },
+      { id:'sq',  cx:240, cy:190, a:0,   fl:false },
+      { id:'pg',  cx:310, cy:350, a:0,   fl:false },
+    ]
+  },
+
+  // ── LEVEL 2 (6º+) ──
+  {
+    id:'cisne', name:'Cisne', level:2, emoji:'🦢',
+    solution: [
+      { id:'lt1', cx:230, cy:300, a:225, fl:false },
+      { id:'lt2', cx:290, cy:230, a:45,  fl:false },
+      { id:'mt',  cx:200, cy:200, a:135, fl:false },
+      { id:'st1', cx:165, cy:155, a:225, fl:false },
+      { id:'st2', cx:240, cy:150, a:315, fl:false },
+      { id:'sq',  cx:310, cy:310, a:45,  fl:false },
+      { id:'pg',  cx:350, cy:280, a:135, fl:true  },
+    ]
+  },
+  {
+    id:'corredor', name:'Pessoa correndo', level:2, emoji:'🏃',
+    solution: [
+      { id:'lt1', cx:220, cy:200, a:315, fl:false },
+      { id:'lt2', cx:290, cy:280, a:135, fl:false },
+      { id:'mt',  cx:250, cy:150, a:45,  fl:false },
+      { id:'st1', cx:200, cy:330, a:225, fl:false },
+      { id:'st2', cx:300, cy:340, a:45,  fl:false },
+      { id:'sq',  cx:260, cy:240, a:45,  fl:false },
+      { id:'pg',  cx:230, cy:270, a:315, fl:true  },
+    ]
+  },
+];
+
+// ─────────────────────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────────────────────
+let selectedAge = -1;
+let currentPuzzle = null;
+let currentPuzzleIdx = 0;
+let totalStars = 0;
+let completedPuzzles = {};
+let timerInterval = null;
+let seconds = 0;
+let showHint = false;
+let hintUsed = false;
+
+// Piece positions on game canvas (draggable)
+let gamePieces = [];
+let selectedPiece = null;
+let dragOffX = 0, dragOffY = 0;
+let isDragging = false;
+
+const gCanvas = document.getElementById('gameCanvas');
+const gCtx = gCanvas.getContext('2d');
+const pCanvas = document.getElementById('pieceCanvas');
+const pCtx = pCanvas.getContext('2d');
+
+const S = 60; // base unit size in px
+
+// ─────────────────────────────────────────────────────────────
+//  PIECE GEOMETRY
+// ─────────────────────────────────────────────────────────────
+function getPiecePoints(def, cx, cy, angle, flipped) {
+  let pts = [];
+  const s = def.scale * S;
+
+  switch(def.shape) {
+    case 'tri':
+      // right isoceles triangle, legs = s
+      pts = [[-s/2, s/2], [s/2, s/2], [-s/2, -s/2]];
+      break;
+    case 'sq':
+      const hs = s/2;
+      pts = [[-hs,-hs],[hs,-hs],[hs,hs],[-hs,hs]];
+      break;
+    case 'pg':
+      // parallelogram: w=s*1.414, h=s, 45deg slant
+      const w = s*1.0, h = s*0.7;
+      pts = [[-w/2+h/2,-h/2],[w/2+h/2,-h/2],[w/2-h/2,h/2],[-w/2-h/2,h/2]];
+      break;
+  }
+
+  const rad = angle * Math.PI / 180;
+  return pts.map(([px, py]) => {
+    let x = flipped ? -px : px;
+    let y = py;
+    const rx = x * Math.cos(rad) - y * Math.sin(rad);
+    const ry = x * Math.sin(rad) + y * Math.cos(rad);
+    return [cx + rx, cy + ry];
+  });
+}
+
+function drawPiece(ctx, def, cx, cy, angle, flipped, alpha=1, selected=false) {
+  const pts = getPiecePoints(def, cx, cy, angle, flipped);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.beginPath();
+  pts.forEach(([x,y], i) => i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+  ctx.closePath();
+  ctx.fillStyle = def.color.fill;
+  ctx.fill();
+  ctx.strokeStyle = selected ? '#6C5CE7' : def.color.stroke;
+  ctx.lineWidth = selected ? 3 : 1.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  if (selected) {
+    ctx.shadowColor = '#6C5CE7';
+    ctx.shadowBlur = 12;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function pointInPoly(pts, px, py) {
+  let inside = false;
+  for (let i=0, j=pts.length-1; i<pts.length; j=i++) {
+    const xi=pts[i][0], yi=pts[i][1], xj=pts[j][0], yj=pts[j][1];
+    const intersect = ((yi>py) !== (yj>py)) && (px < (xj-xi)*(py-yi)/(yj-yi)+xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  INIT GAME PIECES (scattered tray positions)
+// ─────────────────────────────────────────────────────────────
+function initGame(puzzle) {
+  currentPuzzle = puzzle;
+  showHint = false;
+  hintUsed = false;
+  seconds = 0;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    seconds++;
+    const m = Math.floor(seconds/60);
+    const s = seconds%60;
+    document.getElementById('timerDisplay').textContent = m+':'+(s<10?'0':'')+s;
+  }, 1000);
+
+  document.getElementById('gameTitle').textContent = puzzle.emoji + ' ' + puzzle.name;
+  document.getElementById('hintBtn').textContent = '💡 Dica';
+  document.getElementById('progressCount').textContent = '0';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('targetLabel').textContent =
+    puzzle.level===0 ? 'Monte a figura — a silhueta guia você!' :
+    puzzle.level===1 ? 'Monte a figura — dica disponível!' :
+    'Monte a figura — apenas a silhueta!';
+
+  // Place pieces scattered on left portion of canvas
+  gamePieces = PIECES_DEF.map((def, i) => {
+    const row = Math.floor(i/3);
+    const col = i%3;
+    return {
+      defId: def.id,
+      def,
+      cx: 80 + col*110 + Math.random()*20,
+      cy: 80 + row*120 + Math.random()*20,
+      angle: [0,45,90,135,180,225,270,315][Math.floor(Math.random()*4)],
+      flipped: false,
+      placed: false,
+    };
+  });
+
+  selectedPiece = null;
+  render();
+  renderPiecePanel();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  RENDER GAME CANVAS
+// ─────────────────────────────────────────────────────────────
+function render() {
+  gCtx.clearRect(0,0,480,480);
+
+  // Background grid dots
+  gCtx.fillStyle = '#E8DFF5';
+  for (let x=20; x<480; x+=30)
+    for (let y=20; y<480; y+=30)
+      gCtx.fillRect(x, y, 2, 2);
+
+  // Draw target silhouette if hint or level 0
+  if (showHint || currentPuzzle?.level===0) {
+    drawSilhouette();
+  }
+
+  // Draw pieces
+  gamePieces.forEach(p => {
+    const sel = p === selectedPiece;
+    drawPiece(gCtx, p.def, p.cx, p.cy, p.angle, p.flipped, p.placed?0.5:1, sel);
+  });
+
+  // Progress
+  const placed = gamePieces.filter(p=>p.placed).length;
+  document.getElementById('progressCount').textContent = placed;
+  document.getElementById('progressFill').style.width = (placed/7*100)+'%';
+
+  // Check win
+  if (placed === 7) setTimeout(showWin, 400);
+}
+
+function drawSilhouette() {
+  if (!currentPuzzle) return;
+  gCtx.save();
+  gCtx.globalAlpha = 0.15;
+  currentPuzzle.solution.forEach(sol => {
+    const def = PIECES_DEF.find(d=>d.id===sol.id);
+    const pts = getPiecePoints(def, sol.cx, sol.cy, sol.a, sol.fl);
+    gCtx.beginPath();
+    pts.forEach(([x,y],i) => i===0?gCtx.moveTo(x,y):gCtx.lineTo(x,y));
+    gCtx.closePath();
+    gCtx.fillStyle = '#6C5CE7';
+    gCtx.fill();
+    gCtx.strokeStyle = '#6C5CE7';
+    gCtx.lineWidth = 1;
+    gCtx.stroke();
+  });
+  gCtx.restore();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  RENDER PIECE PANEL
+// ─────────────────────────────────────────────────────────────
+function renderPiecePanel() {
+  pCtx.clearRect(0,0,176,400);
+  const positions = [
+    [88,40],[88,100],[88,160],[44,230],[132,230],[88,300],[88,360]
+  ];
+  gamePieces.forEach((p,i) => {
+    if (p.placed) {
+      pCtx.save();
+      pCtx.globalAlpha = 0.25;
+      drawPiece(pCtx, p.def, positions[i][0], positions[i][1], 0, false, 0.25);
+      pCtx.restore();
+    } else {
+      drawPiece(pCtx, p.def, positions[i][0], positions[i][1], 0, false, 1, p===selectedPiece);
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  DRAG INTERACTION
+// ─────────────────────────────────────────────────────────────
+function getCanvasPos(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return [(clientX-rect.left)*scaleX, (clientY-rect.top)*scaleY];
+}
+
+gCanvas.addEventListener('mousedown', startDrag);
+gCanvas.addEventListener('touchstart', startDrag, {passive:false});
+gCanvas.addEventListener('mousemove', doDrag);
+gCanvas.addEventListener('touchmove', doDrag, {passive:false});
+gCanvas.addEventListener('mouseup', endDrag);
+gCanvas.addEventListener('touchend', endDrag);
+
+function startDrag(e) {
+  e.preventDefault();
+  const [mx,my] = getCanvasPos(e, gCanvas);
+  // Find topmost piece at click
+  for (let i=gamePieces.length-1; i>=0; i--) {
+    const p = gamePieces[i];
+    if (p.placed) continue;
+    const pts = getPiecePoints(p.def, p.cx, p.cy, p.angle, p.flipped);
+    if (pointInPoly(pts, mx, my)) {
+      selectedPiece = p;
+      dragOffX = mx - p.cx;
+      dragOffY = my - p.cy;
+      isDragging = true;
+      // Bring to front
+      gamePieces.splice(i,1);
+      gamePieces.push(selectedPiece);
+      render();
+      renderPiecePanel();
+      return;
+    }
+  }
+  selectedPiece = null;
+  render();
+}
+
+function doDrag(e) {
+  if (!isDragging || !selectedPiece) return;
+  e.preventDefault();
+  const [mx,my] = getCanvasPos(e, gCanvas);
+  selectedPiece.cx = mx - dragOffX;
+  selectedPiece.cy = my - dragOffY;
+  render();
+}
+
+function endDrag(e) {
+  if (!isDragging || !selectedPiece) return;
+  isDragging = false;
+  snapToSolution();
+  render();
+  renderPiecePanel();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  SNAP TO SOLUTION
+// ─────────────────────────────────────────────────────────────
+const SNAP_DIST = 35;
+const SNAP_ANGLE = 20;
+
+function angleDiff(a, b) {
+  let d = ((a-b)%360+360)%360;
+  return d > 180 ? 360-d : d;
+}
+
+function snapToSolution() {
+  if (!selectedPiece || !currentPuzzle) return;
+  const sol = currentPuzzle.solution.find(s => s.id === selectedPiece.defId);
+  if (!sol) return;
+  const dx = selectedPiece.cx - sol.cx;
+  const dy = selectedPiece.cy - sol.cy;
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  const adiff = angleDiff(selectedPiece.angle, sol.a);
+  const flipOk = selectedPiece.flipped === sol.fl;
+
+  if (dist < SNAP_DIST && adiff < SNAP_ANGLE && flipOk) {
+    selectedPiece.cx = sol.cx;
+    selectedPiece.cy = sol.cy;
+    selectedPiece.angle = sol.a;
+    selectedPiece.placed = true;
+    playSnapSound();
+  }
+}
+
+function playSnapSound() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(660, ctx.currentTime);
+    osc.frequency.setValueAtTime(880, ctx.currentTime+0.05);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.2);
+    osc.start(); osc.stop(ctx.currentTime+0.2);
+  } catch(e) {}
+}
+
+// ─────────────────────────────────────────────────────────────
+//  ROTATE / FLIP
+// ─────────────────────────────────────────────────────────────
+function rotateCurrent() {
+  if (!selectedPiece || selectedPiece.placed) return;
+  selectedPiece.angle = (selectedPiece.angle + 45) % 360;
+  render();
+}
+function flipCurrent() {
+  if (!selectedPiece || selectedPiece.placed) return;
+  selectedPiece.flipped = !selectedPiece.flipped;
+  render();
+}
+
+// Double click to rotate
+gCanvas.addEventListener('dblclick', e => {
+  const [mx,my] = getCanvasPos(e, gCanvas);
+  for (let i=gamePieces.length-1; i>=0; i--) {
+    const p = gamePieces[i];
+    if (p.placed) continue;
+    const pts = getPiecePoints(p.def, p.cx, p.cy, p.angle, p.flipped);
+    if (pointInPoly(pts, mx, my)) {
+      selectedPiece = p;
+      rotateCurrent();
+      return;
+    }
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+//  HINT
+// ─────────────────────────────────────────────────────────────
+function toggleHint() {
+  showHint = !showHint;
+  hintUsed = true;
+  document.getElementById('hintBtn').textContent = showHint ? '🙈 Ocultar' : '💡 Dica';
+  render();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  WIN
+// ─────────────────────────────────────────────────────────────
+function showWin() {
+  clearInterval(timerInterval);
+  const stars = hintUsed ? (seconds<60?2:1) : (seconds<60?3:seconds<120?2:1);
+  const earned = stars;
+  totalStars += earned;
+  document.getElementById('totalStars').textContent = totalStars;
+  completedPuzzles[currentPuzzle.id] = stars;
+
+  document.getElementById('winEmoji').textContent = ['😊','🎊','🏆'][stars-1];
+  document.getElementById('winMsg').textContent =
+    stars===3 ? 'Perfeito! Sem usar dicas e bem rápido!' :
+    stars===2 ? 'Muito bem! Você conseguiu!' : 'Continue praticando!';
+  document.getElementById('winStars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3-stars);
+
+  document.getElementById('win-overlay').classList.add('show');
+  launchConfetti();
+  updatePuzzleGrid();
+}
+
+function launchConfetti() {
+  const colors = ['#6C5CE7','#FDCB6E','#FF7675','#00CEC9','#FD79A8','#55EFC4'];
+  for (let i=0; i<60; i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};transform:rotate(${Math.random()*360}deg);border-radius:${Math.random()>0.5?'50%':'2px'}`;
+      document.body.appendChild(el);
+      el.animate([
+        {transform:`translateY(0) rotate(0deg)`, opacity:1},
+        {transform:`translateY(100vh) rotate(${Math.random()*720}deg)`, opacity:0}
+      ],{duration:1500+Math.random()*1000,easing:'ease-in'}).onfinish = ()=>el.remove();
+    }, i*30);
+  }
+}
+
+function nextPuzzle() {
+  document.getElementById('win-overlay').classList.remove('show');
+  const levelPuzzles = PUZZLES.filter(p=>p.level===selectedAge);
+  currentPuzzleIdx = (currentPuzzleIdx+1)%levelPuzzles.length;
+  initGame(levelPuzzles[currentPuzzleIdx]);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  NAVIGATION
+// ─────────────────────────────────────────────────────────────
+function selectAge(idx) {
+  selectedAge = idx;
+  document.querySelectorAll('.age-card').forEach((c,i)=>c.classList.toggle('selected',i===idx));
+  document.getElementById('puzzle-section').classList.remove('hidden');
+  updatePuzzleGrid();
+  document.getElementById('puzzle-section').scrollIntoView({behavior:'smooth'});
+}
+
+function updatePuzzleGrid() {
+  const grid = document.getElementById('puzzleGrid');
+  grid.innerHTML='';
+  const levelPuzzles = PUZZLES.filter(p=>p.level===selectedAge);
+  levelPuzzles.forEach((puzzle,i) => {
+    const stars = completedPuzzles[puzzle.id]||0;
+    const card = document.createElement('div');
+    card.className = 'puzzle-card' + (stars?' completed':'');
+    card.innerHTML = `
+      <div class="puzzle-preview" style="height:100px;font-size:52px;line-height:100px;">${puzzle.emoji}</div>
+      <div class="puzzle-info">
+        <div class="puzzle-name">${puzzle.name}</div>
+        <div class="puzzle-stars">${stars?'⭐'.repeat(stars)+'☆'.repeat(3-stars):'☆☆☆'}</div>
+      </div>
+    `;
+    card.onclick = () => startPuzzle(puzzle, i);
+    grid.appendChild(card);
+  });
+}
+
+function startPuzzle(puzzle, idx) {
+  currentPuzzleIdx = idx;
+  document.getElementById('screen-levels').style.display='none';
+  document.getElementById('screen-game').style.display='block';
+  initGame(puzzle);
+}
+
+function goBack() {
+  clearInterval(timerInterval);
+  document.getElementById('win-overlay').classList.remove('show');
+  document.getElementById('screen-game').style.display='none';
+  document.getElementById('screen-levels').style.display='block';
+  updatePuzzleGrid();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────────────────────
+selectAge(0);
+</script>
+</body>
+</html>
